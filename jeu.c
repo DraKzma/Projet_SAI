@@ -9,8 +9,8 @@
 #define MAX_ORTHO_X 20
 #define MIN_ORTHO_Y -20
 #define MAX_ORTHO_Y 20
-#define TAILLE_FENETRE_X 800
-#define TAILLE_FENETRE_Y 800
+#define TAILLE_FENETRE_X 1000
+#define TAILLE_FENETRE_Y 1000
 
 //coordonnee x: droite/gauche (augmente a droite/diminue a gauche)
 //coordonnee y: avant/arriere (augmente en avant/diminue en arriere)
@@ -43,7 +43,7 @@ int right = 5;
 int bottom = -5;
 int top = 5;
 int near = 5;
-int front = 1005;
+int front = 3005; //Distance de vision, les blocs spawn vers 5000 (invisible au debut jusqu'a ce qu'ils atteignent le champ de vision)
 
 void init_joueur(){
     j.eyeX = 250.0;
@@ -63,8 +63,8 @@ void init_joueur(){
     j.upZ = 5.0; //SET LA VITESSE DE DEPLACEMENT SUR LES Z
 }
 
-//Fonction afficher cube
-void afficherCube(double xmin, double ymin, double zmin, double xmax, double ymax, double zmax){
+//Fonction afficher cube avec faces
+void afficherCubeFaces(double xmin, double ymin, double zmin, double xmax, double ymax, double zmax){
 
     double p1x = xmin;
     double p1y = ymin;
@@ -134,6 +134,57 @@ void afficheLigne(double x1, double y1, double z1, double x2, double y2, double 
     glVertex3f(x2, y2, z2);
 }
 
+//Fonction afficher cube avec lignes
+void  afficherCubeLignes(double xmin, double ymin, double zmin, double xmax, double ymax, double zmax){
+    double p1x = xmin;
+    double p1y = ymin;
+    double p1z = zmin;
+
+    double p2x = xmax;
+    double p2y = ymin;
+    double p2z = zmin;
+
+    double p3x = xmax;
+    double p3y = ymax;
+    double p3z = zmin;
+
+    double p4x = xmin;
+    double p4y = ymax;
+    double p4z = zmin;
+
+    double p5x = xmin;
+    double p5y = ymin;
+    double p5z = zmax;
+
+    double p6x = xmax;
+    double p6y = ymin;
+    double p6z = zmax;
+
+    double p7x = xmax;
+    double p7y = ymax;
+    double p7z = zmax;
+
+    double p8x = xmin;
+    double p8y = ymax;
+    double p8z = zmax;
+
+    //Affichage des 12 cotes
+    afficheLigne(p1x, p1y, p1z, p2x, p2y, p2z);
+    afficheLigne(p2x, p2y, p2z, p3x, p3y, p3z);
+    afficheLigne(p3x, p3y, p3z, p4x, p4y, p4z);
+    afficheLigne(p4x, p4y, p4z, p1x, p1y, p1z);
+
+    afficheLigne(p1x, p1y, p1z, p5x, p5y, p5z);
+    afficheLigne(p2x, p2y, p2z, p6x, p6y, p6z);
+    afficheLigne(p3x, p3y, p3z, p7x, p7y, p7z);
+    afficheLigne(p4x, p4y, p4z, p8x, p8y, p8z);
+
+    afficheLigne(p5x, p5y, p5z, p6x, p6y, p6z);
+    afficheLigne(p6x, p6y, p6z, p7x, p7y, p7z);
+    afficheLigne(p7x, p7y, p7z, p8x, p8y, p8z);
+    afficheLigne(p8x, p8y, p8z, p5x, p5y, p5z);
+}
+
 //Fonction d'affichage
 void Affichage(){
     //Debut
@@ -159,11 +210,10 @@ void Affichage(){
     glBegin(GL_QUADS);
 
     //Zone d'affichage
-    //Pour ne pas toucher l'opacite: glColor3f(0,0,1.0)
 
     //Gros cube ou le joueur se situe, 500x500x500 sur l'origine avec 0.2 d'opacite
-    glColor4f(0, 0, 1.0, 0.2);
-    afficherCube(0.0,0.0,0.0,500.0,500.0,500.0);
+    //glColor4f(0, 0, 1.0, 0.2);
+    //afficherCubeFaces(0.0,0.0,0.0,500.0,500.0,500.0);
 
     glEnd();
 
@@ -172,6 +222,10 @@ void Affichage(){
     glLineWidth(5.0);
 
     glBegin(GL_LINES);
+
+    //Cube de 500x500x500 sur l'origine, le joueur ne peut pas sortir de ce cube
+    glColor3f(1,1,1);
+    afficherCubeLignes(0.0,0.0,0.0,500.0,500.0,500.0);
 
     // Right (rouge)
     glColor3f(1,0,0);
@@ -199,14 +253,18 @@ void GererClavier(unsigned char touche, int x, int y){
         j.eyeX += j.frontX;
         j.eyeY += j.frontY;
         j.eyeZ += j.frontZ;
-        printf("On avance..\n");
+        j.xO += j.frontX;
+        j.yO += j.frontY;
+        j.zO += j.frontZ;
     }
     //On bouge en arriere
     if(touche == 's'){
         j.eyeX -= j.frontX;
         j.eyeY -= j.frontY;
         j.eyeZ -= j.frontZ;
-        printf("On recule..\n");
+        j.xO -= j.frontX;
+        j.yO -= j.frontY;
+        j.zO -= j.frontZ;
     }
     //On bouge a droite
     if(touche == 'd'){
@@ -216,7 +274,6 @@ void GererClavier(unsigned char touche, int x, int y){
         j.xO += j.rightX;
         j.yO += j.rightY;
         j.zO += j.rightZ;
-        printf("On se deplace a droite..\n");
     }
     //On bouge a gauche
     if(touche == 'q'){
@@ -226,7 +283,24 @@ void GererClavier(unsigned char touche, int x, int y){
         j.xO -= j.rightX;
         j.yO -= j.rightY;
         j.zO -= j.rightZ;
-        printf("On se deplace a gauche..\n");
+    }
+    //On bouge en haut
+    if(touche == ' '){
+        j.eyeX += j.upX;
+        j.eyeY += j.upY;
+        j.eyeZ += j.upZ;
+        j.xO += j.upX;
+        j.yO += j.upY;
+        j.zO += j.upZ;
+    }
+    //On bouge a gauche
+    if(touche == 'c'){
+        j.eyeX -= j.upX;
+        j.eyeY -= j.upY;
+        j.eyeZ -= j.upZ;
+        j.xO -= j.upX;
+        j.yO -= j.upY;
+        j.zO -= j.upZ;
     }
 }
 
@@ -268,6 +342,9 @@ int main(int argc, char* argv[]){
     //Creation de la fenetre
     glutCreateWindow("Game");
     glEnable(GL_DEPTH_TEST);
+
+    //Si on veut mettre en plein ecran par la suite
+    //glutFullScreen();
 
     //Activation du blend pour l'opacite
     glEnable(GL_BLEND);
