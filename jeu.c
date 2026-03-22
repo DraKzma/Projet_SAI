@@ -408,6 +408,7 @@ void Animer(){
 int main(int argc, char* argv[]){
 
     //Variables
+    char c;
 
     //Initialisation du joueur
     init_joueur();
@@ -420,6 +421,12 @@ int main(int argc, char* argv[]){
 
     //Initialisation de la taille de l'ecran
     init_taille_ecran();
+
+    //Attente d'un appuie sur entree pour commencer
+    printf("Pour quitter la fenetre, appuyez sur \'&\'.\n");
+    printf("Pour commencer le jeu, appuyez sur entree:\n");
+    while(c = getchar() != '\n'){
+    }
 
     //Debut
     glutInit(&argc, argv);                
@@ -459,8 +466,6 @@ int main(int argc, char* argv[]){
 
     //Gestion de l'animation
     glutIdleFunc(Animer);
-
-    printf("Debut du jeu, pour quitter la fenetre, appuyez sur \'&\'");
 
     //Boucle
     glutMainLoop();
