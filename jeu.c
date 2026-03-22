@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <limits.h>
 #include <math.h>
+#include <X11/Xlib.h>
 
 #define MIN_ORTHO_X -20
 #define MAX_ORTHO_X 20
@@ -34,33 +35,81 @@ struct joueur{
 };
 typedef struct joueur joueur;
 
+struct cube{
+    double xmin;
+    double ymin;
+    double zmin;
+    double xmax;
+    double ymax;
+    double zmax;
+};
+typedef struct cube cube;
+
 //Declaration du joueur
 joueur j;
 
+//Cube dans lequel le joueur se trouve
+cube main_cube;
+
+//Tableau des touches (pour gerer le multi-input)
+int touches[256];
+
+//Taille de la fenetre
+int screen_width;
+int screen_height;
+
+//Gestion de la camera
+
+
 //Variables pour le Frustum
-int left = -5;
-int right = 5;
-int bottom = -5;
-int top = 5;
-int near = 5;
+int left = -16;
+int right = 16;
+int bottom = -9;
+int top = 9;
+int near = 16;
 int front = 3005; //Distance de vision, les blocs spawn vers 5000 (invisible au debut jusqu'a ce qu'ils atteignent le champ de vision)
 
 void init_joueur(){
-    j.eyeX = 250.0;
-    j.eyeY = 250.0;
-    j.eyeZ = 250.0;
-    j.xO = 250.0;
-    j.yO = 1000.0;
-    j.zO = 250.0;
-    j.rightX = 5.0; //SET LA VITESSE DE DEPLACEMENT SUR LES X
+    j.eyeX = 500.0;
+    j.eyeY = 500.0;
+    j.eyeZ = 500.0;
+    j.xO = 500.0;
+    j.yO = 2000.0;
+    j.zO = 500.0;
+    j.rightX = 0.75; //SET LA VITESSE DE DEPLACEMENT SUR LES X
     j.rightY = 0.0;
     j.rightZ = 0.0;
     j.frontX = 0.0;
-    j.frontY = 5.0; //SET LA VITESSE DE DEPLACEMENT SUR LES Y
+    j.frontY = 0.75; //SET LA VITESSE DE DEPLACEMENT SUR LES Y
     j.frontZ = 0.0;
     j.upX = 0.0;
     j.upY = 0.0;
-    j.upZ = 5.0; //SET LA VITESSE DE DEPLACEMENT SUR LES Z
+    j.upZ = 0.75; //SET LA VITESSE DE DEPLACEMENT SUR LES Z
+}
+
+void init_main_cube(){
+    main_cube.xmin = 0.0;
+    main_cube.ymin = 0.0;
+    main_cube.zmin = 0.0;
+    main_cube.xmax = 1000.0;
+    main_cube.ymax = 1000.0;
+    main_cube.zmax = 1000.0;
+}
+
+void init_touches(){
+    int i;
+    for(i = 0; i<256; i++){
+        touches[i] = 0;
+    }
+}
+
+void init_taille_ecran(){
+    Display* d = XOpenDisplay(NULL);
+    Screen*  s = DefaultScreenOfDisplay(d);
+
+    screen_width  = s->width;
+    screen_height = s->height;
+    printf("Taille de l'ecran: %d x %d\n", screen_width, screen_height);
 }
 
 //Fonction afficher cube avec faces
@@ -211,9 +260,9 @@ void Affichage(){
 
     //Zone d'affichage
 
-    //Gros cube ou le joueur se situe, 500x500x500 sur l'origine avec 0.2 d'opacite
-    //glColor4f(0, 0, 1.0, 0.2);
-    //afficherCubeFaces(0.0,0.0,0.0,500.0,500.0,500.0);
+    //Gros cube ou le joueur se situe, 1000x1000x1000 sur l'origine avec 0.2 d'opacite
+    glColor4f(0, 0, 1.0, 0.2);
+    afficherCubeFaces(main_cube.xmin, main_cube.ymin, main_cube.zmin, main_cube.xmax, main_cube.ymax, main_cube.zmax);
 
     glEnd();
 
@@ -223,21 +272,21 @@ void Affichage(){
 
     glBegin(GL_LINES);
 
-    //Cube de 500x500x500 sur l'origine, le joueur ne peut pas sortir de ce cube
+    //Cube de 1000x1000x1000 sur l'origine, le joueur ne peut pas sortir de ce cube
     glColor3f(1,1,1);
-    afficherCubeLignes(0.0,0.0,0.0,500.0,500.0,500.0);
+    afficherCubeLignes(main_cube.xmin, main_cube.ymin, main_cube.zmin, main_cube.xmax, main_cube.ymax, main_cube.zmax);
 
     // Right (rouge)
     glColor3f(1,0,0);
-    afficheLigne(j.eyeX, j.eyeY+10.0, j.eyeZ+5.0, j.eyeX+(100.0*j.rightX), j.eyeY, j.eyeZ);
+    afficheLigne(j.eyeX, j.eyeY+20.0, j.eyeZ+5.0, j.eyeX+(100.0*j.rightX), j.eyeY+(100.0*j.rightY), j.eyeZ+(100.0*j.rightZ));
 
     // Front (vert)
     glColor3f(0,1,0);
-    afficheLigne(j.eyeX, j.eyeY+10.0, j.eyeZ+5.0, j.eyeX, j.eyeY+(100.0*j.frontY), j.eyeZ);
+    afficheLigne(j.eyeX, j.eyeY+20.0, j.eyeZ+5.0, j.eyeX+(100.0*j.frontX), j.eyeY+(100.0*j.frontY), j.eyeZ+(100.0*j.frontZ));
 
     // Up (bleu)
     glColor3f(0,0,1);
-    afficheLigne(j.eyeX, j.eyeY+10.0, j.eyeZ+5.0, j.eyeX, j.eyeY, j.eyeZ+(100.0*j.upZ));
+    afficheLigne(j.eyeX, j.eyeY+20.0, j.eyeZ+5.0, j.eyeX+(100.0*j.upX), j.eyeY+(100.0*j.upY), j.eyeZ+(100.0*j.upZ));
 
     glEnd();
     glEnable(GL_DEPTH_TEST);
@@ -246,62 +295,23 @@ void Affichage(){
     glutSwapBuffers();
 }
 
-//Fonction qui gere le clavier
-void GererClavier(unsigned char touche, int x, int y){
-    //On bouge en avant
-    if(touche == 'z'){
-        j.eyeX += j.frontX;
-        j.eyeY += j.frontY;
-        j.eyeZ += j.frontZ;
-        j.xO += j.frontX;
-        j.yO += j.frontY;
-        j.zO += j.frontZ;
+int finPartie(){
+    exit(EXIT_SUCCESS);
+}
+
+//Fonction qui gere lorsqu'on appuie sur une touche du clavier
+void ToucheAppuyee(unsigned char touche, int x, int y){
+    touches[touche] = 1;
+
+    //Si on appuie sur '&' la partie s'arrete et la fenetre se ferme
+    if(touche == '&'){
+        finPartie();
     }
-    //On bouge en arriere
-    if(touche == 's'){
-        j.eyeX -= j.frontX;
-        j.eyeY -= j.frontY;
-        j.eyeZ -= j.frontZ;
-        j.xO -= j.frontX;
-        j.yO -= j.frontY;
-        j.zO -= j.frontZ;
-    }
-    //On bouge a droite
-    if(touche == 'd'){
-        j.eyeX += j.rightX;
-        j.eyeY += j.rightY;
-        j.eyeZ += j.rightZ;
-        j.xO += j.rightX;
-        j.yO += j.rightY;
-        j.zO += j.rightZ;
-    }
-    //On bouge a gauche
-    if(touche == 'q'){
-        j.eyeX -= j.rightX;
-        j.eyeY -= j.rightY;
-        j.eyeZ -= j.rightZ;
-        j.xO -= j.rightX;
-        j.yO -= j.rightY;
-        j.zO -= j.rightZ;
-    }
-    //On bouge en haut
-    if(touche == ' '){
-        j.eyeX += j.upX;
-        j.eyeY += j.upY;
-        j.eyeZ += j.upZ;
-        j.xO += j.upX;
-        j.yO += j.upY;
-        j.zO += j.upZ;
-    }
-    //On bouge a gauche
-    if(touche == 'c'){
-        j.eyeX -= j.upX;
-        j.eyeY -= j.upY;
-        j.eyeZ -= j.upZ;
-        j.xO -= j.upX;
-        j.yO -= j.upY;
-        j.zO -= j.upZ;
-    }
+}
+
+//Fonction qui gere lorsqu'on relache une touche du clavier
+void ToucheLachee(unsigned char touche, int x, int y){
+    touches[touche] = 0;
 }
 
 //Fonction qui convertit les coodronnees de l'ecran en coordonnees qu'on a besoin
@@ -311,14 +321,85 @@ void conversionCoordonnees(int *x, int *y){
     *y = -((*y * (MAX_ORTHO_Y - MIN_ORTHO_Y))/(TAILLE_FENETRE_Y+1) + MIN_ORTHO_Y);
 }
 
-//Fonction qui gere la souris
-void GererSouris(int bouton, int etat, int x, int y){
+//Fonction qui gere l'appuie d'un bouton de la souris
+void BoutonSouris(int bouton, int etat, int x, int y){
     //Conversion des coordonnees
     conversionCoordonnees(&x, &y);
 }
 
+//Fonction appelee par les deux autres fonctions de gestion de la souris
+void MouvementSourisGenerique(int x, int y){
+
+}
+
+//Fonction qui gere le mouvement de la souris lorsqu'un bouton de celle-ci est appuyee
+void MouvementSourisAppuyee(int x, int y){
+    printf("Coordonnees souris: %d, %d\n", x, y);
+    MouvementSourisGenerique(x, y);
+}
+
+//Fonction qui gere le mouvement de la souris lorsque aucun bouton de celle-ci est appuyee
+void MouvementSourisRelachee(int x, int y){
+    printf("Coordonnees souris: %d, %d\n", x, y);
+    MouvementSourisGenerique(x, y);
+}
+
 //Fonction d'animation
 void Animer(){
+    //On bouge en avant
+    if(touches['z']){
+        j.eyeX += j.frontX;
+        j.eyeY += j.frontY;
+        j.eyeZ += j.frontZ;
+        j.xO += j.frontX;
+        j.yO += j.frontY;
+        j.zO += j.frontZ;
+    }
+    //On bouge en arriere
+    if(touches['s']){
+        j.eyeX -= j.frontX;
+        j.eyeY -= j.frontY;
+        j.eyeZ -= j.frontZ;
+        j.xO -= j.frontX;
+        j.yO -= j.frontY;
+        j.zO -= j.frontZ;
+    }
+    //On bouge a droite
+    if(touches['d']){
+        j.eyeX += j.rightX;
+        j.eyeY += j.rightY;
+        j.eyeZ += j.rightZ;
+        j.xO += j.rightX;
+        j.yO += j.rightY;
+        j.zO += j.rightZ;
+    }
+    //On bouge a gauche
+    if(touches['q']){
+        j.eyeX -= j.rightX;
+        j.eyeY -= j.rightY;
+        j.eyeZ -= j.rightZ;
+        j.xO -= j.rightX;
+        j.yO -= j.rightY;
+        j.zO -= j.rightZ;
+    }
+    //On bouge en haut
+    if(touches[' ']){
+        j.eyeX += j.upX;
+        j.eyeY += j.upY;
+        j.eyeZ += j.upZ;
+        j.xO += j.upX;
+        j.yO += j.upY;
+        j.zO += j.upZ;
+    }
+    //On bouge a gauche
+    if(touches['c']){
+        j.eyeX -= j.upX;
+        j.eyeY -= j.upY;
+        j.eyeZ -= j.upZ;
+        j.xO -= j.upX;
+        j.yO -= j.upY;
+        j.zO -= j.upZ;
+    }
 
     //Reaffichage
     glutPostRedisplay();
@@ -330,6 +411,15 @@ int main(int argc, char* argv[]){
 
     //Initialisation du joueur
     init_joueur();
+
+    //Initialisation du main cube
+    init_main_cube();
+
+    //Initialisation du tableau des touches appuyees
+    init_touches();
+
+    //Initialisation de la taille de l'ecran
+    init_taille_ecran();
 
     //Debut
     glutInit(&argc, argv);                
@@ -343,8 +433,8 @@ int main(int argc, char* argv[]){
     glutCreateWindow("Game");
     glEnable(GL_DEPTH_TEST);
 
-    //Si on veut mettre en plein ecran par la suite
-    //glutFullScreen();
+    //Mettre en plein ecran
+    glutFullScreen();
 
     //Activation du blend pour l'opacite
     glEnable(GL_BLEND);
@@ -353,12 +443,15 @@ int main(int argc, char* argv[]){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //Gestion du clavier
-    glutKeyboardFunc(GererClavier);
+    glutKeyboardFunc(ToucheAppuyee);
+    glutKeyboardUpFunc(ToucheLachee);
 
     //Gestion de la souris
-    glutMouseFunc(GererSouris);
+    glutMouseFunc(BoutonSouris);
+    glutMotionFunc(MouvementSourisAppuyee);
+    glutPassiveMotionFunc(MouvementSourisRelachee);
 
-    //Gestion du curseur de la souris
+    //On rend le curseur de la souris invisible
     glutSetCursor(GLUT_CURSOR_RIGHT_ARROW);
 
     //Gestion de l'affichage
@@ -366,6 +459,8 @@ int main(int argc, char* argv[]){
 
     //Gestion de l'animation
     glutIdleFunc(Animer);
+
+    printf("Debut du jeu, pour quitter la fenetre, appuyez sur \'&\'");
 
     //Boucle
     glutMainLoop();
