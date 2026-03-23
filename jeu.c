@@ -76,15 +76,15 @@ void init_joueur(){
     j.xO = 500.0;
     j.yO = 2000.0;
     j.zO = 500.0;
-    j.rightX = 0.75; //SET LA VITESSE DE DEPLACEMENT SUR LES X
+    j.rightX = 1.0;
     j.rightY = 0.0;
     j.rightZ = 0.0;
     j.frontX = 0.0;
-    j.frontY = 0.75; //SET LA VITESSE DE DEPLACEMENT SUR LES Y
+    j.frontY = 1.0;
     j.frontZ = 0.0;
     j.upX = 0.0;
     j.upY = 0.0;
-    j.upZ = 0.75; //SET LA VITESSE DE DEPLACEMENT SUR LES Z
+    j.upZ = 1.0;
 }
 
 void init_main_cube(){
@@ -346,59 +346,62 @@ void MouvementSourisRelachee(int x, int y){
 
 //Fonction d'animation
 void Animer(){
+
+    double vitesse = 0.75; //Vitesse de deplacement de 0.75
+
     //On bouge en avant
     if(touches['z']){
-        j.eyeX += j.frontX;
-        j.eyeY += j.frontY;
-        j.eyeZ += j.frontZ;
-        j.xO += j.frontX;
-        j.yO += j.frontY;
-        j.zO += j.frontZ;
+        j.eyeX += j.frontX*vitesse;
+        j.eyeY += j.frontY*vitesse;
+        j.eyeZ += j.frontZ*vitesse;
+        j.xO += j.frontX*vitesse;
+        j.yO += j.frontY*vitesse;
+        j.zO += j.frontZ*vitesse;
     }
     //On bouge en arriere
     if(touches['s']){
-        j.eyeX -= j.frontX;
-        j.eyeY -= j.frontY;
-        j.eyeZ -= j.frontZ;
-        j.xO -= j.frontX;
-        j.yO -= j.frontY;
-        j.zO -= j.frontZ;
+        j.eyeX -= j.frontX*vitesse;
+        j.eyeY -= j.frontY*vitesse;
+        j.eyeZ -= j.frontZ*vitesse;
+        j.xO -= j.frontX*vitesse;
+        j.yO -= j.frontY*vitesse;
+        j.zO -= j.frontZ*vitesse;
     }
     //On bouge a droite
     if(touches['d']){
-        j.eyeX += j.rightX;
-        j.eyeY += j.rightY;
-        j.eyeZ += j.rightZ;
-        j.xO += j.rightX;
-        j.yO += j.rightY;
-        j.zO += j.rightZ;
+        j.eyeX += j.rightX*vitesse;
+        j.eyeY += j.rightY*vitesse;
+        j.eyeZ += j.rightZ*vitesse;
+        j.xO += j.rightX*vitesse;
+        j.yO += j.rightY*vitesse;
+        j.zO += j.rightZ*vitesse;
     }
     //On bouge a gauche
     if(touches['q']){
-        j.eyeX -= j.rightX;
-        j.eyeY -= j.rightY;
-        j.eyeZ -= j.rightZ;
-        j.xO -= j.rightX;
-        j.yO -= j.rightY;
-        j.zO -= j.rightZ;
+        j.eyeX -= j.rightX*vitesse;
+        j.eyeY -= j.rightY*vitesse;
+        j.eyeZ -= j.rightZ*vitesse;
+        j.xO -= j.rightX*vitesse;
+        j.yO -= j.rightY*vitesse;
+        j.zO -= j.rightZ*vitesse;
     }
     //On bouge en haut
     if(touches[' ']){
-        j.eyeX += j.upX;
-        j.eyeY += j.upY;
-        j.eyeZ += j.upZ;
-        j.xO += j.upX;
-        j.yO += j.upY;
-        j.zO += j.upZ;
+        j.eyeX += j.upX*vitesse;
+        j.eyeY += j.upY*vitesse;
+        j.eyeZ += j.upZ*vitesse;
+        j.xO += j.upX*vitesse;
+        j.yO += j.upY*vitesse;
+        j.zO += j.upZ*vitesse;
     }
     //On bouge a gauche
     if(touches['c']){
-        j.eyeX -= j.upX;
-        j.eyeY -= j.upY;
-        j.eyeZ -= j.upZ;
-        j.xO -= j.upX;
-        j.yO -= j.upY;
-        j.zO -= j.upZ;
+        j.eyeX -= j.upX*vitesse;
+        j.eyeY -= j.upY*vitesse;
+        j.eyeZ -= j.upZ*vitesse;
+        j.xO -= j.upX*vitesse;
+        j.yO -= j.upY*vitesse;
+        j.zO -= j.upZ*vitesse;
     }
 
     //Reaffichage
@@ -458,7 +461,7 @@ int main(int argc, char* argv[]){
     glutMotionFunc(MouvementSourisAppuyee);
     glutPassiveMotionFunc(MouvementSourisRelachee);
 
-    //On rend le curseur de la souris invisible
+    //Forme du curseur de la souris
     glutSetCursor(GLUT_CURSOR_RIGHT_ARROW);
 
     //Gestion de l'affichage
