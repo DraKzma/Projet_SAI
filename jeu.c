@@ -37,18 +37,18 @@ void init_touches(){
     }
 }
 
-//Initialise l'ecran et son ration pour le frustum
+//Initialise l'ecran et son ratio pour le frustum
 void init_taille_ecran(){
 
-    //Ratio de 16:9 par defaut
     double ratio;
-    int ratioOne = 16; //Pour l'affichage
-    int ratioTwo = 9; //Pour l'affichage
+    int ratioOne;
+    int ratioTwo;
 
     screen_width = glutGet(GLUT_SCREEN_WIDTH);
     screen_height = glutGet(GLUT_SCREEN_HEIGHT);
 
     ratio = (double)screen_width/(double)screen_height;
+    //Ratio de 16:9 par defaut
     ratioOne = 16;
     ratioTwo = 9;
 
