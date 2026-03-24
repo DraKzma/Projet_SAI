@@ -428,7 +428,7 @@ int main(int argc, char* argv[]){
     //Attente d'un appuie sur entree pour commencer
     printf("Pour quitter la fenetre, appuyez sur \'&\'.\n");
     printf("Pour commencer le jeu, appuyez sur entree:\n");
-    while(c = getchar() != '\n'){
+    while((c = getchar()) != '\n'){
     }
 
     //Debut
