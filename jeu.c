@@ -58,7 +58,7 @@ int screen_width;
 int screen_height;
 
 //Gestion de la camera
-
+int put_mouse_in_the_middle = 1;
 
 //Variables pour le Frustum
 int left = -16;
@@ -289,6 +289,12 @@ void Affichage(){
 
     //Fin
     glutSwapBuffers();
+
+    //on met la souris au milieu de l'ecran au tout debut
+    if(put_mouse_in_the_middle){
+        glutWarpPointer(screen_width/2, screen_height/2);
+        put_mouse_in_the_middle = 0;
+    }
 }
 
 int finPartie(){
@@ -343,7 +349,7 @@ void MouvementSourisRelachee(int x, int y){
 //Fonction d'animation
 void Animer(){
 
-    double vitesse = 0.75; //Vitesse de deplacement de 0.75
+    double vitesse = 2.25; //Vitesse de deplacement de 0.75
 
     //On bouge en avant
     if(touches['z']){
