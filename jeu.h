@@ -1,0 +1,69 @@
+#include "GL/gl.h"
+#include "GL/glut.h"
+#include "stdlib.h"
+#include <stdio.h>
+#include <limits.h>
+#include <math.h>
+
+#define MIN_ORTHO_X -20
+#define MAX_ORTHO_X 20
+#define MIN_ORTHO_Y -20
+#define MAX_ORTHO_Y 20
+#define TAILLE_FENETRE_X 1000
+#define TAILLE_FENETRE_Y 1000
+
+//coordonnee x: droite/gauche (augmente a droite/diminue a gauche)
+//coordonnee y: avant/arriere (augmente en avant/diminue en arriere)
+//coordonnee z: haut/bas (augmente en haut/diminue en bas)
+struct joueur{
+    double eyeX;
+    double eyeY;
+    double eyeZ;
+    double xO;
+    double yO;
+    double zO;
+    double rightX;
+    double rightY;
+    double rightZ;
+    double frontX;
+    double frontY;
+    double frontZ;
+    double upX;
+    double upY;
+    double upZ;
+};
+typedef struct joueur joueur;
+
+struct cube{
+    double xmin;
+    double ymin;
+    double zmin;
+    double xmax;
+    double ymax;
+    double zmax;
+};
+typedef struct cube cube;
+
+//Declaration du joueur
+joueur j;
+
+//Cube dans lequel le joueur se trouve
+cube main_cube;
+
+//Tableau des touches (pour gerer le multi-input)
+int touches[256];
+
+//Taille de la fenetre
+int screen_width;
+int screen_height;
+
+//Gestion de la camera
+int put_mouse_in_the_middle = 1;
+
+//Variables pour le Frustum
+int left = -16;
+int right = 16;
+int bottom = -9;
+int top = 9;
+int near = 16;
+int front = 3016; //Distance de vision, les blocs spawn vers 5000 (invisible au debut jusqu'a ce qu'ils atteignent le champ de vision)
