@@ -5,13 +5,6 @@
 #include <limits.h>
 #include <math.h>
 
-#define MIN_ORTHO_X -20
-#define MAX_ORTHO_X 20
-#define MIN_ORTHO_Y -20
-#define MAX_ORTHO_Y 20
-#define TAILLE_FENETRE_X 1000
-#define TAILLE_FENETRE_Y 1000
-
 //coordonnee x: droite/gauche (augmente a droite/diminue a gauche)
 //coordonnee y: avant/arriere (augmente en avant/diminue en arriere)
 //coordonnee z: haut/bas (augmente en haut/diminue en bas)
