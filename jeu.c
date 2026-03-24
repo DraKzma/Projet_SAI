@@ -462,7 +462,7 @@ int main(int argc, char* argv[]){
     glutPassiveMotionFunc(MouvementSourisRelachee);
 
     //Forme du curseur de la souris
-    glutSetCursor(GLUT_CURSOR_RIGHT_ARROW);
+    glutSetCursor(GLUT_CURSOR_CROSSHAIR);
 
     //Gestion de l'affichage
     glutDisplayFunc(Affichage);
