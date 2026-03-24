@@ -1,73 +1,6 @@
-#include "GL/gl.h"
-#include "GL/glut.h"
-#include "stdlib.h"
-#include <stdio.h>
-#include <limits.h>
-#include <math.h>
+#include "jeu.h"
 
-#define MIN_ORTHO_X -20
-#define MAX_ORTHO_X 20
-#define MIN_ORTHO_Y -20
-#define MAX_ORTHO_Y 20
-#define TAILLE_FENETRE_X 1000
-#define TAILLE_FENETRE_Y 1000
-
-//coordonnee x: droite/gauche (augmente a droite/diminue a gauche)
-//coordonnee y: avant/arriere (augmente en avant/diminue en arriere)
-//coordonnee z: haut/bas (augmente en haut/diminue en bas)
-struct joueur{
-    double eyeX;
-    double eyeY;
-    double eyeZ;
-    double xO;
-    double yO;
-    double zO;
-    double rightX;
-    double rightY;
-    double rightZ;
-    double frontX;
-    double frontY;
-    double frontZ;
-    double upX;
-    double upY;
-    double upZ;
-};
-typedef struct joueur joueur;
-
-struct cube{
-    double xmin;
-    double ymin;
-    double zmin;
-    double xmax;
-    double ymax;
-    double zmax;
-};
-typedef struct cube cube;
-
-//Declaration du joueur
-joueur j;
-
-//Cube dans lequel le joueur se trouve
-cube main_cube;
-
-//Tableau des touches (pour gerer le multi-input)
-int touches[256];
-
-//Taille de la fenetre
-int screen_width;
-int screen_height;
-
-//Gestion de la camera
-int put_mouse_in_the_middle = 1;
-
-//Variables pour le Frustum
-int left = -16;
-int right = 16;
-int bottom = -9;
-int top = 9;
-int near = 16;
-int front = 3005; //Distance de vision, les blocs spawn vers 5000 (invisible au debut jusqu'a ce qu'ils atteignent le champ de vision)
-
+//Initialise le joueur
 void init_joueur(){
     j.eyeX = 500.0;
     j.eyeY = 500.0;
@@ -86,6 +19,7 @@ void init_joueur(){
     j.upZ = 1.0;
 }
 
+//Initialise le cube principale
 void init_main_cube(){
     main_cube.xmin = 0.0;
     main_cube.ymin = 0.0;
@@ -95,6 +29,7 @@ void init_main_cube(){
     main_cube.zmax = 1000.0;
 }
 
+//Initialise Le tableau de touches du clavier
 void init_touches(){
     int i;
     for(i = 0; i<256; i++){
@@ -102,10 +37,34 @@ void init_touches(){
     }
 }
 
+//Initialise l'ecran et son ration pour le frustum
 void init_taille_ecran(){
+
+    //Ratio de 16:9 par defaut
+    double ratio;
+    int ratioOne = 16; //Pour l'affichage
+    int ratioTwo = 9; //Pour l'affichage
+
     screen_width = glutGet(GLUT_SCREEN_WIDTH);
     screen_height = glutGet(GLUT_SCREEN_HEIGHT);
-    printf("Taille de l'ecran: %d x %d\n", screen_width, screen_height);
+
+    ratio = (double)screen_width/(double)screen_height;
+    ratioOne = 16;
+    ratioTwo = 9;
+
+    //Si le ratio est 16:10 on change les coordonnes du frustum
+    if(ratio == 16.0/10.0){
+        left = -16;
+        right = 16;
+        bottom = -10;
+        top = 10;
+        near = 16;
+        front = 3016;
+
+        ratioOne = 16;
+        ratioTwo = 10;
+    }
+    printf("Taille de l'ecran: %d x %d (Ratio: %d:%d)\n", screen_width, screen_height, ratioOne, ratioTwo);
 }
 
 //Fonction afficher cube avec faces
