@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <limits.h>
 #include <math.h>
-#include <X11/Xlib.h>
 
 #define MIN_ORTHO_X -20
 #define MAX_ORTHO_X 20
@@ -104,11 +103,8 @@ void init_touches(){
 }
 
 void init_taille_ecran(){
-    Display* d = XOpenDisplay(NULL);
-    Screen*  s = DefaultScreenOfDisplay(d);
-
-    screen_width  = s->width;
-    screen_height = s->height;
+    screen_width = glutGet(GLUT_SCREEN_WIDTH);
+    screen_height = glutGet(GLUT_SCREEN_HEIGHT);
     printf("Taille de l'ecran: %d x %d\n", screen_width, screen_height);
 }
 
@@ -413,6 +409,10 @@ int main(int argc, char* argv[]){
     //Variables
     char c;
 
+    //Debut
+    glutInit(&argc, argv);                
+    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
+
     //Initialisation du joueur
     init_joueur();
 
@@ -430,10 +430,6 @@ int main(int argc, char* argv[]){
     printf("Pour commencer le jeu, appuyez sur entree:\n");
     while(c = getchar() != '\n'){
     }
-
-    //Debut
-    glutInit(&argc, argv);                
-    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 
     //Position de la fenetre
     glutInitWindowSize(TAILLE_FENETRE_X, TAILLE_FENETRE_Y);
