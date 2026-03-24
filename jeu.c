@@ -197,6 +197,7 @@ void Affichage(){
     //Modif de la visualisation
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
+
     //left,right,bottom,top: taille de la face avant
     //near: distance de la face avant (near)
     //front: distance de vision (far)
@@ -249,6 +250,7 @@ void Affichage(){
     //Fin
     glutSwapBuffers();
 
+
     //on met la souris au milieu de l'ecran au tout debut
     if(put_mouse_in_the_middle){
         glutWarpPointer(screen_width/2, screen_height/2);
@@ -275,19 +277,6 @@ void ToucheLachee(unsigned char touche, int x, int y){
     touches[touche] = 0;
 }
 
-//Fonction qui convertit les coodronnees de l'ecran en coordonnees qu'on a besoin
-void conversionCoordonnees(int *x, int *y){
-    //Conversion des coordonnees
-    *x = (*x * (MAX_ORTHO_X - MIN_ORTHO_Y))/(TAILLE_FENETRE_X+1) + MIN_ORTHO_X;
-    *y = -((*y * (MAX_ORTHO_Y - MIN_ORTHO_Y))/(TAILLE_FENETRE_Y+1) + MIN_ORTHO_Y);
-}
-
-//Fonction qui gere l'appuie d'un bouton de la souris
-void BoutonSouris(int bouton, int etat, int x, int y){
-    //Conversion des coordonnees
-    conversionCoordonnees(&x, &y);
-}
-
 //Fonction appelee par les deux autres fonctions de gestion de la souris
 void MouvementSourisGenerique(int x, int y){
 
@@ -295,13 +284,11 @@ void MouvementSourisGenerique(int x, int y){
 
 //Fonction qui gere le mouvement de la souris lorsqu'un bouton de celle-ci est appuyee
 void MouvementSourisAppuyee(int x, int y){
-    printf("Coordonnees souris: %d, %d\n", x, y);
     MouvementSourisGenerique(x, y);
 }
 
 //Fonction qui gere le mouvement de la souris lorsque aucun bouton de celle-ci est appuyee
 void MouvementSourisRelachee(int x, int y){
-    printf("Coordonnees souris: %d, %d\n", x, y);
     MouvementSourisGenerique(x, y);
 }
 
@@ -396,10 +383,6 @@ int main(int argc, char* argv[]){
     while(c = getchar() != '\n'){
     }
 
-    //Position de la fenetre
-    glutInitWindowSize(TAILLE_FENETRE_X, TAILLE_FENETRE_Y);
-    glutInitWindowPosition(50, 50);
-
     //Creation de la fenetre
     glutCreateWindow("Game");
     glEnable(GL_DEPTH_TEST);
@@ -418,7 +401,6 @@ int main(int argc, char* argv[]){
     glutKeyboardUpFunc(ToucheLachee);
 
     //Gestion de la souris
-    glutMouseFunc(BoutonSouris);
     glutMotionFunc(MouvementSourisAppuyee);
     glutPassiveMotionFunc(MouvementSourisRelachee);
 
