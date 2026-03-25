@@ -1,4 +1,4 @@
-#include "jeu.h"
+#include "../include/jeu.h"
 
 //Initialise le joueur
 void init_joueur(){

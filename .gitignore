@@ -1,0 +1,6 @@
+# Fichier objets
+out/jeu.o
+out/blocks.o
+
+# Executable
+jeu
