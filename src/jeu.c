@@ -296,7 +296,7 @@ void MouvementSourisGenerique(int x, int y){
     //Variable de l'angle
     double angle;
 
-    angle = (x*(M_PI/screen_width)) - (M_PI/2);
+    angle = ((x*(M_PI/screen_width)) - (M_PI/2)) * -1;
     printf("%f\n", angle);
     j.rightX = (BaseRightX * cos(angle)) + (BaseRightY * (-sin(angle)));
     j.rightY = (BaseRightX * sin(angle)) + (BaseRightY * cos(angle));
@@ -304,14 +304,11 @@ void MouvementSourisGenerique(int x, int y){
 
     j.frontX = (BaseFrontX * cos(angle)) + (BaseFrontY * (-sin(angle)));
     j.frontY = (BaseFrontX * sin(angle)) + (BaseFrontY * cos(angle));
-    j.frontZ = BaseRightZ;
+    j.frontZ = BaseFrontZ;
 
-    j.xO = (j.frontX) + j.eyeX; 
-    j.yO = (j.frontY * 1500) + j.eyeY; 
-    j.zO = (j.frontZ) + j.eyeZ;
-
-    printf("%f %f %f\n", j.xO, j.yO, j.zO);
-    printf("%f %f %f\n", j.frontX, j.frontY, j.frontZ);
+    j.xO = j.eyeX + j.frontX * 1500;
+    j.yO = j.eyeY + j.frontY * 1500;
+    j.zO = j.eyeZ + j.frontZ * 1500;
 }
 
 //Fonction qui gere le mouvement de la souris lorsqu'un bouton de celle-ci est appuyee
