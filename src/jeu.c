@@ -296,8 +296,24 @@ void MouvementSourisGenerique(int x, int y){
     //Variable de l'angle
     double angle;
 
+    //Rotation sur les y
+    /*
+    angle = ((y*(M_PI/screen_height)) - (M_PI/2)) * -1;
+    j.frontX = BaseFrontX;
+    j.frontY = BaseFrontY * cos(angle) + BaseFrontZ * (-sin(angle));
+    j.frontZ = BaseFrontY * sin(angle) + BaseFrontZ * cos(angle);
+
+    j.upX = BaseUpX;
+    j.upY = BaseUpY * cos(angle) + BaseUpZ * (-sin(angle));
+    j.upZ = BaseUpY * sin(angle) + BaseUpZ * cos(angle);
+
+    j.xO = j.eyeX + j.frontX * 1500;
+    j.yO = j.eyeY + j.frontY * 1500;
+    j.zO = j.eyeZ + j.frontZ * 1500;
+    */
+
+    //Rotation sur les x
     angle = ((x*(M_PI/screen_width)) - (M_PI/2)) * -1;
-    printf("%f\n", angle);
     j.rightX = (BaseRightX * cos(angle)) + (BaseRightY * (-sin(angle)));
     j.rightY = (BaseRightX * sin(angle)) + (BaseRightY * cos(angle));
     j.rightZ = BaseRightZ;
