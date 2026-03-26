@@ -280,6 +280,38 @@ void ToucheLachee(unsigned char touche, int x, int y){
 //Fonction appelee par les deux autres fonctions de gestion de la souris
 void MouvementSourisGenerique(int x, int y){
 
+    //Redefinition des vecteurs de base
+    double BaseRightX = 1.0;
+    double BaseRightY = 0.0;
+    double BaseRightZ = 0.0;
+
+    double BaseFrontX = 0.0;
+    double BaseFrontY = 1.0;
+    double BaseFrontZ = 0.0;
+
+    double BaseUpX = 0.0;
+    double BaseUpY = 0.0;
+    double BaseUpZ = 1.0;
+
+    //Variable de l'angle
+    double angle;
+
+    angle = (x*(M_PI/screen_width)) - (M_PI/2);
+    printf("%f\n", angle);
+    j.rightX = (BaseRightX * cos(angle)) + (BaseRightY * (-sin(angle)));
+    j.rightY = (BaseRightX * sin(angle)) + (BaseRightY * cos(angle));
+    j.rightZ = BaseRightZ;
+
+    j.frontX = (BaseFrontX * cos(angle)) + (BaseFrontY * (-sin(angle)));
+    j.frontY = (BaseFrontX * sin(angle)) + (BaseFrontY * cos(angle));
+    j.frontZ = BaseRightZ;
+
+    j.xO = (j.frontX) + j.eyeX; 
+    j.yO = (j.frontY * 1500) + j.eyeY; 
+    j.zO = (j.frontZ) + j.eyeZ;
+
+    printf("%f %f %f\n", j.xO, j.yO, j.zO);
+    printf("%f %f %f\n", j.frontX, j.frontY, j.frontZ);
 }
 
 //Fonction qui gere le mouvement de la souris lorsqu'un bouton de celle-ci est appuyee
