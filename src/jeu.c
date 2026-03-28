@@ -190,13 +190,85 @@ void  afficherCubeLignes(double xmin, double ymin, double zmin, double xmax, dou
     afficheLigne(p8x, p8y, p8z, p5x, p5y, p5z);
 }
 
+/*  valeurs de exit_code
+*   0: appuie sur le bouton de fin de partie detectee
+*   1: collision avec un block easy
+*   2: collision avec un block medium
+*   3: collision avec un block hard
+*   4: le joueur a gagne
+*/
+int finPartie(int exit_code){
+    sleep(1);
+    
+    printf("Fin de la partie:\n");
+    if(exit_code == 0){
+        printf("Le bouton de fin de partie a ete appuyee.\n");
+    }
+    else if(exit_code == 1){
+        printf("Un block easy a touche le joueur.\n");
+    }
+    else if(exit_code == 2){
+        printf("Un block medium a touche le joueur.\n");
+    }
+    else if(exit_code == 3){
+        printf("Un block hard a touche le joueur.\n");
+    }
+    else{
+        printf("Vous avez gagne!\n");
+    }
+
+    exit(EXIT_SUCCESS);
+}
+
+/*  Fonction qui gere le changement de difficulte
+*   On change de difficulte si tous les blocks sont à -500
+*/
+void gestion_changement_dfficulte(){
+    int i;
+    int blocks_encore_a_portee = 0;
+    if(onEasyMode){
+        for(i = 0; i<nb_blocks_easy; i++){
+            //On teste le ymax
+            if(blocks_easy[i][4] > -500){
+                blocks_encore_a_portee = 1;
+            }
+        }
+        if(!blocks_encore_a_portee){
+            onEasyMode = 0;
+            onMediumMode = 1;
+        }
+    }
+    else if(onMediumMode){
+        for(i=0; i<nb_blocks_medium; i++){
+            //on teste le ymax
+            if(blocks_medium[i][4] > -500){
+                blocks_encore_a_portee = 1;
+            }
+        }
+        if(!blocks_encore_a_portee){
+            onMediumMode = 0;
+            onHardMode = 1;
+        }
+    }
+    else if(onHardMode){
+        for(i=0; i<nb_blocks_hard; i++){
+            //on teste le ymax
+            if(blocks_hard[i][4] > -500){
+                blocks_encore_a_portee = 1;
+            }
+        }
+        if(!blocks_encore_a_portee){
+            finPartie(4);
+        }
+    }
+}
+
 //Renvoie 1 si au moins une collision avec un blocks easy, 0 sinon
 int verif_collisions_blocks_easy(){
     int collision = 0;
     int i = 0;
     while(!collision && i<nb_blocks_easy){
-        //A: le joueur
-        //B: le block easy
+
         if((hitboxXmin <= blocks_easy[i][3]) &&
             (hitboxXmax >= blocks_easy[i][0]) &&
             (hitboxYmin <= blocks_easy[i][4]) &&
@@ -206,38 +278,49 @@ int verif_collisions_blocks_easy(){
                 collision = 1;
             }
         i++;
+
     }
     return collision;
 }
 
 //Renvoie 1 si au moins une collision avec un blocks medium, 0 sinon
 int verif_collisions_blocks_medium(){
-    return 0;
+    int collision = 0;
+    int i = 0;
+    while(!collision && i<nb_blocks_medium){
+
+        if((hitboxXmin <= blocks_medium[i][3]) &&
+            (hitboxXmax >= blocks_medium[i][0]) &&
+            (hitboxYmin <= blocks_medium[i][4]) &&
+            (hitboxYmax >= blocks_medium[i][1]) &&
+            (hitboxZmin <= blocks_medium[i][5]) &&
+            (hitboxZmax >= blocks_medium[i][2])){
+                collision = 1;
+            }
+        i++;
+
+    }
+    return collision;
 }
 
 //Renvoie 1 si au moins une collision avec un blocks hard, 0 sinon
 int verif_collisions_blocks_hard(){
-    return 0;
-}
+    int collision = 0;
+    int i = 0;
+    while(!collision && i<nb_blocks_hard){
 
+        if((hitboxXmin <= blocks_hard[i][3]) &&
+            (hitboxXmax >= blocks_hard[i][0]) &&
+            (hitboxYmin <= blocks_hard[i][4]) &&
+            (hitboxYmax >= blocks_hard[i][1]) &&
+            (hitboxZmin <= blocks_hard[i][5]) &&
+            (hitboxZmax >= blocks_hard[i][2])){
+                collision = 1;
+            }
+        i++;
 
-/*  valeurs de exit_code
-*   0: appuie sur le bouton de fin de partie detectee
-*   1: collision avec un block easy
-*   2: collision avec un block medium
-*   3: collision avec un block hard
-*/
-int finPartie(int exit_code){
-    sleep(1);
-    
-    printf("Fin de la partie:\n");
-    if(exit_code == 0){
-        printf("Le bouton de fin de partie a ete appuyee.\n");
     }
-    if(exit_code == 1){
-        printf("Un block easy a touche le joueur.\n");
-    }
-    exit(EXIT_SUCCESS);
+    return collision;
 }
 
 //Fonction d'affichage
@@ -286,10 +369,16 @@ void Affichage(){
         }
     }
     else if(onMediumMode){
-
+        glColor3f(1.0,0.5,0.0);
+        for(i = 0; i<nb_blocks_medium; i++){
+            afficherCubeFaces(blocks_medium[i][0], blocks_medium[i][1], blocks_medium[i][2], blocks_medium[i][3], blocks_medium[i][4], blocks_medium[i][5]);
+        }
     }
     else{
-
+        glColor3f(1.0,0.0,0.0);
+        for(i = 0; i<nb_blocks_hard; i++){
+            afficherCubeFaces(blocks_hard[i][0], blocks_hard[i][1], blocks_hard[i][2], blocks_hard[i][3], blocks_hard[i][4], blocks_hard[i][5]);
+        }
     }
 
     glEnd();
@@ -332,11 +421,25 @@ void Affichage(){
         put_mouse_in_the_middle = 0;
     }
 
+    //Gestion des collisions avec les blocks
     if(onEasyMode){
         if(verif_collisions_blocks_easy()){
             finPartie(1);
         }
     }
+    else if(onMediumMode){
+        if(verif_collisions_blocks_medium()){
+            finPartie(2);
+        }
+    }
+    else{
+        if(verif_collisions_blocks_hard()){
+            finPartie(3);
+        }
+    }
+
+    gestion_changement_dfficulte();
+
 }
 
 //Fonction qui gere lorsqu'on appuie sur une touche du clavier
@@ -520,10 +623,18 @@ void Animer(){
         }
     }
     else if(onMediumMode){
-
+        for(i=0; i<nb_blocks_medium; i++){
+            //On modif le ymin et ymax
+            blocks_medium[i][1] -= vitesse_blocks_medium;
+            blocks_medium[i][4] -= vitesse_blocks_medium;
+        }
     }
     else{
-
+        for(i = 0; i<nb_blocks_hard; i++){
+            //On modif le ymin et ymax
+            blocks_hard[i][1] -= vitesse_blocks_hard;
+            blocks_hard[i][4] -= vitesse_blocks_hard; 
+        }
     }
 
     //Reaffichage
@@ -551,8 +662,10 @@ int main(int argc, char* argv[]){
     //Initialisation de la taille de l'ecran
     init_taille_ecran();
 
-    //Le jeu commence automatiquement en mode facile
+    //Intit des blocks
     spawn_blocks_easy();
+    spawn_blocks_medium();
+    spawn_blocks_hard();
 
     //Attente d'un appuie sur entree pour commencer
     printf("Pour quitter la fenetre, appuyez sur \'&\'.\n");
