@@ -1,4 +1,5 @@
 #include "../include/jeu.h"
+#include "../include/blocks.h"
 
 //Initialise le joueur
 void init_joueur(){
@@ -189,8 +190,62 @@ void  afficherCubeLignes(double xmin, double ymin, double zmin, double xmax, dou
     afficheLigne(p8x, p8y, p8z, p5x, p5y, p5z);
 }
 
+//Renvoie 1 si au moins une collision avec un blocks easy, 0 sinon
+int verif_collisions_blocks_easy(){
+    int collision = 0;
+    int i = 0;
+    while(!collision && i<nb_blocks_easy){
+        //A: le joueur
+        //B: le block easy
+        if((hitboxXmin <= blocks_easy[i][3]) &&
+            (hitboxXmax >= blocks_easy[i][0]) &&
+            (hitboxYmin <= blocks_easy[i][4]) &&
+            (hitboxYmax >= blocks_easy[i][1]) &&
+            (hitboxZmin <= blocks_easy[i][5]) &&
+            (hitboxZmax >= blocks_easy[i][2])){
+                collision = 1;
+            }
+        i++;
+    }
+    return collision;
+}
+
+//Renvoie 1 si au moins une collision avec un blocks medium, 0 sinon
+int verif_collisions_blocks_medium(){
+    return 0;
+}
+
+//Renvoie 1 si au moins une collision avec un blocks hard, 0 sinon
+int verif_collisions_blocks_hard(){
+    return 0;
+}
+
+
+/*  valeurs de exit_code
+*   0: appuie sur le bouton de fin de partie detectee
+*   1: collision avec un block easy
+*   2: collision avec un block medium
+*   3: collision avec un block hard
+*/
+int finPartie(int exit_code){
+    sleep(1);
+    
+    printf("Fin de la partie:\n");
+    if(exit_code == 0){
+        printf("Le bouton de fin de partie a ete appuyee.\n");
+    }
+    if(exit_code == 1){
+        printf("Un block easy a touche le joueur.\n");
+    }
+    exit(EXIT_SUCCESS);
+}
+
 //Fonction d'affichage
 void Affichage(){
+
+    //Variables
+    int i;
+
     //Debut
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -209,7 +264,7 @@ void Affichage(){
     //eye: position de l'oeil
     //pointO: point ou l'on regarde
     //up: Vecteur qui represente le haut pour nous 
-    gluLookAt(j.eyeX,j.eyeY,j.eyeZ,j.xO,j.yO,j.zO,j.upX,j.upY,j.upZ);
+    gluLookAt(j.eyeX+(200*(-j.frontX))+(60*(j.upX)),j.eyeY+(200*(-j.frontY))+(60*(j.upY)),j.eyeZ+(200*(-j.frontZ))+(60*(j.upZ)),j.xO+(200*(-j.frontX))+(60*(j.upX)),j.yO+(200*(-j.frontY))+(60*(j.upY)),j.zO+(200*(-j.frontZ))+(60*(j.upZ)),j.upX,j.upY,j.upZ);
 
     //GL_QUADS affiche faces par faces les cubes
     glBegin(GL_QUADS);
@@ -217,8 +272,25 @@ void Affichage(){
     //Zone d'affichage
 
     //Gros cube ou le joueur se situe, 1000x1000x1000 sur l'origine avec 0.2 d'opacite
-    glColor4f(0, 0, 1.0, 0.2);
-    afficherCubeFaces(main_cube.xmin, main_cube.ymin, main_cube.zmin, main_cube.xmax, main_cube.ymax, main_cube.zmax);
+    //glColor4f(0, 0, 1.0, 0.2);
+    //afficherCubeFaces(main_cube.xmin, main_cube.ymin, main_cube.zmin, main_cube.xmax, main_cube.ymax, main_cube.zmax);
+
+    //Cube du joueur
+    glColor3f(0.0,0.0,1.0);
+    afficherCubeFaces(hitboxXmin, hitboxYmin, hitboxZmin, hitboxXmax, hitboxYmax, hitboxZmax);
+
+    if(onEasyMode){
+        glColor3f(0.0,1.0,0.0);
+        for(i = 0; i<nb_blocks_easy; i++){
+            afficherCubeFaces(blocks_easy[i][0], blocks_easy[i][1], blocks_easy[i][2], blocks_easy[i][3], blocks_easy[i][4], blocks_easy[i][5]);
+        }
+    }
+    else if(onMediumMode){
+
+    }
+    else{
+
+    }
 
     glEnd();
 
@@ -229,20 +301,23 @@ void Affichage(){
     glBegin(GL_LINES);
 
     //Cube de 1000x1000x1000 sur l'origine, le joueur ne peut pas sortir de ce cube
-    glColor3f(1,1,1);
+    glColor3f(1.0,1.0,1.0);
     afficherCubeLignes(main_cube.xmin, main_cube.ymin, main_cube.zmin, main_cube.xmax, main_cube.ymax, main_cube.zmax);
 
-    // Right (rouge)
-    glColor3f(1,0,0);
-    afficheLigne(j.eyeX, j.eyeY+20.0, j.eyeZ+5.0, j.eyeX+(100.0*j.rightX), j.eyeY+(100.0*j.rightY), j.eyeZ+(100.0*j.rightZ));
+    //Cube du joueur
+    afficherCubeLignes(hitboxXmin, hitboxYmin, hitboxZmin, hitboxXmax, hitboxYmax, hitboxZmax);
 
-    // Front (vert)
-    glColor3f(0,1,0);
-    afficheLigne(j.eyeX, j.eyeY+20.0, j.eyeZ+5.0, j.eyeX+(100.0*j.frontX), j.eyeY+(100.0*j.frontY), j.eyeZ+(100.0*j.frontZ));
+    // Right (rose)
+    //glColor3f(1,0,1);
+    //afficheLigne(j.eyeX, j.eyeY+20.0, j.eyeZ+5.0, j.eyeX+(100.0*j.rightX), j.eyeY+(100.0*j.rightY), j.eyeZ+(100.0*j.rightZ));
 
-    // Up (bleu)
-    glColor3f(0,0,1);
-    afficheLigne(j.eyeX, j.eyeY+20.0, j.eyeZ+5.0, j.eyeX+(100.0*j.upX), j.eyeY+(100.0*j.upY), j.eyeZ+(100.0*j.upZ));
+    // Front (jaune)
+    //glColor3f(1,1,0);
+    //afficheLigne(j.eyeX, j.eyeY+20.0, j.eyeZ+5.0, j.eyeX+(100.0*j.frontX), j.eyeY+(100.0*j.frontY), j.eyeZ+(100.0*j.frontZ));
+
+    // Up (bleu-ciel)
+    //glColor3f(0,1,1);
+    //afficheLigne(j.eyeX, j.eyeY+20.0, j.eyeZ+5.0, j.eyeX+(100.0*j.upX), j.eyeY+(100.0*j.upY), j.eyeZ+(100.0*j.upZ));
 
     glEnd();
     glEnable(GL_DEPTH_TEST);
@@ -256,10 +331,12 @@ void Affichage(){
         glutWarpPointer(screen_width/2, screen_height/2);
         put_mouse_in_the_middle = 0;
     }
-}
 
-int finPartie(){
-    exit(EXIT_SUCCESS);
+    if(onEasyMode){
+        if(verif_collisions_blocks_easy()){
+            finPartie(1);
+        }
+    }
 }
 
 //Fonction qui gere lorsqu'on appuie sur une touche du clavier
@@ -268,7 +345,7 @@ void ToucheAppuyee(unsigned char touche, int x, int y){
 
     //Si on appuie sur '&' la partie s'arrete et la fenetre se ferme
     if(touche == '&'){
-        finPartie();
+        finPartie(0);
     }
 }
 
@@ -340,7 +417,8 @@ void MouvementSourisRelachee(int x, int y){
 //Fonction d'animation
 void Animer(){
 
-    double vitesse = 2.25; //Vitesse de deplacement de 0.75
+    //Variables
+    int i;
 
     //On bouge en avant
     if(touches['z']){
@@ -350,6 +428,12 @@ void Animer(){
         j.xO += j.frontX*vitesse;
         j.yO += j.frontY*vitesse;
         j.zO += j.frontZ*vitesse;
+        hitboxXmin += j.frontX*vitesse;
+        hitboxYmin += j.frontY*vitesse;
+        hitboxZmin += j.frontZ*vitesse;
+        hitboxXmax += j.frontX*vitesse;
+        hitboxYmax += j.frontY*vitesse;
+        hitboxZmax += j.frontZ*vitesse;
     }
     //On bouge en arriere
     if(touches['s']){
@@ -359,6 +443,12 @@ void Animer(){
         j.xO -= j.frontX*vitesse;
         j.yO -= j.frontY*vitesse;
         j.zO -= j.frontZ*vitesse;
+        hitboxXmin -= j.frontX*vitesse;
+        hitboxYmin -= j.frontY*vitesse;
+        hitboxZmin -= j.frontZ*vitesse;
+        hitboxXmax -= j.frontX*vitesse;
+        hitboxYmax -= j.frontY*vitesse;
+        hitboxZmax -= j.frontZ*vitesse;
     }
     //On bouge a droite
     if(touches['d']){
@@ -368,6 +458,12 @@ void Animer(){
         j.xO += j.rightX*vitesse;
         j.yO += j.rightY*vitesse;
         j.zO += j.rightZ*vitesse;
+        hitboxXmin += j.rightX*vitesse;
+        hitboxYmin += j.rightY*vitesse;
+        hitboxZmin += j.rightZ*vitesse;
+        hitboxXmax += j.rightX*vitesse;
+        hitboxYmax += j.rightY*vitesse;
+        hitboxZmax += j.rightZ*vitesse;
     }
     //On bouge a gauche
     if(touches['q']){
@@ -377,6 +473,12 @@ void Animer(){
         j.xO -= j.rightX*vitesse;
         j.yO -= j.rightY*vitesse;
         j.zO -= j.rightZ*vitesse;
+        hitboxXmin -= j.rightX*vitesse;
+        hitboxYmin -= j.rightY*vitesse;
+        hitboxZmin -= j.rightZ*vitesse;
+        hitboxXmax -= j.rightX*vitesse;
+        hitboxYmax -= j.rightY*vitesse;
+        hitboxZmax -= j.rightZ*vitesse;
     }
     //On bouge en haut
     if(touches[' ']){
@@ -386,6 +488,12 @@ void Animer(){
         j.xO += j.upX*vitesse;
         j.yO += j.upY*vitesse;
         j.zO += j.upZ*vitesse;
+        hitboxXmin += j.upX*vitesse;
+        hitboxYmin += j.upY*vitesse;
+        hitboxZmin += j.upZ*vitesse;
+        hitboxXmax += j.upX*vitesse;
+        hitboxYmax += j.upY*vitesse;
+        hitboxZmax += j.upZ*vitesse;
     }
     //On bouge a gauche
     if(touches['c']){
@@ -395,6 +503,27 @@ void Animer(){
         j.xO -= j.upX*vitesse;
         j.yO -= j.upY*vitesse;
         j.zO -= j.upZ*vitesse;
+        hitboxXmin -= j.upX*vitesse;
+        hitboxYmin -= j.upY*vitesse;
+        hitboxZmin -= j.upZ*vitesse;
+        hitboxXmax -= j.upX*vitesse;
+        hitboxYmax -= j.upY*vitesse;
+        hitboxZmax -= j.upZ*vitesse;
+    }
+
+    //Gestion des blocks
+    if(onEasyMode){
+        for(i=0; i<nb_blocks_easy; i++){
+            //On modif le ymin et ymax
+            blocks_easy[i][1] -= vitesse_blocks_easy;
+            blocks_easy[i][4] -= vitesse_blocks_easy;
+        }
+    }
+    else if(onMediumMode){
+
+    }
+    else{
+
     }
 
     //Reaffichage
@@ -421,6 +550,9 @@ int main(int argc, char* argv[]){
 
     //Initialisation de la taille de l'ecran
     init_taille_ecran();
+
+    //Le jeu commence automatiquement en mode facile
+    spawn_blocks_easy();
 
     //Attente d'un appuie sur entree pour commencer
     printf("Pour quitter la fenetre, appuyez sur \'&\'.\n");
