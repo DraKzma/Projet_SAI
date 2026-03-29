@@ -66,19 +66,20 @@ int near = 16;
 int front = 3016; //Distance de vision
 
 //Vitesse de deplacement
-double vitesse = 3.0;
+double vitesse = 4.0;
 
-//Hitbox du joueur 32x32x32
-double hitboxXmin = 484;
-double hitboxYmin = 484;
-double hitboxZmin = 484;
-double hitboxXmax = 516;
-double hitboxYmax = 516;
-double hitboxZmax = 516;
+//Hitbox du joueur 40x40x40
+double hitboxXmin = 480;
+double hitboxYmin = 480;
+double hitboxZmin = 480;
+double hitboxXmax = 520;
+double hitboxYmax = 520;
+double hitboxZmax = 520;
 
 //Booleen qui indique le niveau actuel
 int onEasyMode = 1;
 int onMediumMode = 0;
 int onHardMode = 0;
+int onExtremeMode = 0;
 
 #endif /* _JEU_H_ */

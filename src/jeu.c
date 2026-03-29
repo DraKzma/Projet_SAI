@@ -195,7 +195,8 @@ void  afficherCubeLignes(double xmin, double ymin, double zmin, double xmax, dou
 *   1: collision avec un block easy
 *   2: collision avec un block medium
 *   3: collision avec un block hard
-*   4: le joueur a gagne
+*   4: collision avec un block extreme
+*   5: le joueur gagne
 */
 int finPartie(int exit_code){
     sleep(1);
@@ -212,6 +213,9 @@ int finPartie(int exit_code){
     }
     else if(exit_code == 3){
         printf("Un block hard a touche le joueur.\n");
+    }
+    else if(exit_code == 4){
+        printf("Un block extreme a touche le joueur.\n");
     }
     else{
         printf("Vous avez gagne!\n");
@@ -258,7 +262,19 @@ void gestion_changement_dfficulte(){
             }
         }
         if(!blocks_encore_a_portee){
-            finPartie(4);
+            onHardMode = 0;
+            onExtremeMode = 1;
+        }
+    }
+    else{
+        for(i=0; i<nb_blocks_extreme; i++){
+            //On teste le ymax
+            if(blocks_extreme[i][4] > -500){
+                blocks_encore_a_portee = 1;
+            }
+        }
+        if(!blocks_encore_a_portee){
+            finPartie(5);
         }
     }
 }
@@ -323,6 +339,26 @@ int verif_collisions_blocks_hard(){
     return collision;
 }
 
+//Renvoie 1 si au moins une collision avec un blocks extreme, 0 sinon
+int verif_collisions_blocks_extreme(){
+    int collision = 0;
+    int i = 0;
+    while(!collision && i<nb_blocks_extreme){
+
+        if((hitboxXmin <= blocks_extreme[i][3]) &&
+            (hitboxXmax >= blocks_extreme[i][0]) &&
+            (hitboxYmin <= blocks_extreme[i][4]) &&
+            (hitboxYmax >= blocks_extreme[i][1]) &&
+            (hitboxZmin <= blocks_extreme[i][5]) &&
+            (hitboxZmax >= blocks_extreme[i][2])){
+                collision = 1;
+            }
+        i++;
+
+    }
+    return collision;
+}
+
 //Fonction d'affichage
 void Affichage(){
 
@@ -347,7 +383,7 @@ void Affichage(){
     //eye: position de l'oeil
     //pointO: point ou l'on regarde
     //up: Vecteur qui represente le haut pour nous 
-    gluLookAt(j.eyeX+(200*(-j.frontX))+(60*(j.upX)),j.eyeY+(200*(-j.frontY))+(60*(j.upY)),j.eyeZ+(200*(-j.frontZ))+(60*(j.upZ)),j.xO+(200*(-j.frontX))+(60*(j.upX)),j.yO+(200*(-j.frontY))+(60*(j.upY)),j.zO+(200*(-j.frontZ))+(60*(j.upZ)),j.upX,j.upY,j.upZ);
+    gluLookAt(j.eyeX+(250*(-j.frontX))+(75*(j.upX)),j.eyeY+(250*(-j.frontY))+(75*(j.upY)),j.eyeZ+(250*(-j.frontZ))+(75*(j.upZ)),j.xO+(250*(-j.frontX))+(75*(j.upX)),j.yO+(250*(-j.frontY))+(75*(j.upY)),j.zO+(250*(-j.frontZ))+(75*(j.upZ)),j.upX,j.upY,j.upZ);
 
     //GL_QUADS affiche faces par faces les cubes
     glBegin(GL_QUADS);
@@ -374,10 +410,16 @@ void Affichage(){
             afficherCubeFaces(blocks_medium[i][0], blocks_medium[i][1], blocks_medium[i][2], blocks_medium[i][3], blocks_medium[i][4], blocks_medium[i][5]);
         }
     }
-    else{
+    else if(onHardMode){
         glColor3f(1.0,0.0,0.0);
         for(i = 0; i<nb_blocks_hard; i++){
             afficherCubeFaces(blocks_hard[i][0], blocks_hard[i][1], blocks_hard[i][2], blocks_hard[i][3], blocks_hard[i][4], blocks_hard[i][5]);
+        }
+    }
+    else{
+        glColor3f(0.5, 0.1, 0.8);
+        for(i = 0; i<nb_blocks_extreme; i++){
+            afficherCubeFaces(blocks_extreme[i][0], blocks_extreme[i][1], blocks_extreme[i][2], blocks_extreme[i][3], blocks_extreme[i][4], blocks_extreme[i][5]);
         }
     }
 
@@ -432,9 +474,14 @@ void Affichage(){
             finPartie(2);
         }
     }
-    else{
+    else if(onHardMode){
         if(verif_collisions_blocks_hard()){
             finPartie(3);
+        }
+    }
+    else{
+        if(verif_collisions_blocks_extreme()){
+            finPartie(4);
         }
     }
 
@@ -629,11 +676,18 @@ void Animer(){
             blocks_medium[i][4] -= vitesse_blocks_medium;
         }
     }
-    else{
+    else if(onHardMode){
         for(i = 0; i<nb_blocks_hard; i++){
             //On modif le ymin et ymax
             blocks_hard[i][1] -= vitesse_blocks_hard;
             blocks_hard[i][4] -= vitesse_blocks_hard; 
+        }
+    }
+    else{
+        for(i = 0; i<nb_blocks_extreme; i++){
+            //On modif le ymin et ymax
+            blocks_extreme[i][1] -= vitesse_blocks_extreme;
+            blocks_extreme[i][4] -= vitesse_blocks_extreme;
         }
     }
 
@@ -666,6 +720,7 @@ int main(int argc, char* argv[]){
     spawn_blocks_easy();
     spawn_blocks_medium();
     spawn_blocks_hard();
+    spawn_blocks_extreme();
 
     //Attente d'un appuie sur entree pour commencer
     printf("Pour quitter la fenetre, appuyez sur \'&\'.\n");
