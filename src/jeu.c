@@ -359,6 +359,17 @@ int verif_collisions_blocks_extreme(){
     return collision;
 }
 
+// renv 1 si le joueur sort du cube principal et 0 sinon
+int verif_sortie_main_cube(){
+    // On vérifie si n'importe quel bord de la hitbox dépasse les bords du main_cube
+    if(hitboxXmin < main_cube.xmin || hitboxXmax > main_cube.xmax ||
+       hitboxYmin < main_cube.ymin || hitboxYmax > main_cube.ymax ||
+       hitboxZmin < main_cube.zmin || hitboxZmax > main_cube.zmax){
+        return 1; // Le joueur est sorti
+    }
+    return 0; // Le joueur est toujours à l'intérieur
+}
+
 //Fonction d'affichage
 void Affichage(){
 
@@ -485,6 +496,7 @@ void Affichage(){
         }
     }
 
+
     gestion_changement_dfficulte();
 
 }
@@ -503,7 +515,7 @@ void ToucheAppuyee(unsigned char touche, int x, int y){
 void ToucheLachee(unsigned char touche, int x, int y){
     touches[touche] = 0;
 }
-
+/*
 //Fonction appelee par les deux autres fonctions de gestion de la souris
 void MouvementSourisGenerique(int x, int y){
 
@@ -537,7 +549,7 @@ void MouvementSourisGenerique(int x, int y){
     j.xO = j.eyeX + j.frontX * 1500;
     j.yO = j.eyeY + j.frontY * 1500;
     j.zO = j.eyeZ + j.frontZ * 1500;
-    */
+    
 
     //Rotation sur les x
     angle = ((x*(M_PI/screen_width)) - (M_PI/2)) * -1;
@@ -549,6 +561,38 @@ void MouvementSourisGenerique(int x, int y){
     j.frontY = (BaseFrontX * sin(angle)) + (BaseFrontY * cos(angle));
     j.frontZ = BaseFrontZ;
 
+    j.xO = j.eyeX + j.frontX * 1500;
+    j.yO = j.eyeY + j.frontY * 1500;
+    j.zO = j.eyeZ + j.frontZ * 1500;
+} */
+
+//Fonction appelee par les deux autres fonctions de gestion de la souris
+void MouvementSourisGenerique(int x, int y){
+
+    // Calcul de l'angle horizontal (Yaw / Lacet) avec x
+    double horizontal = ((x*(M_PI/screen_width)) - (M_PI/2)) * -1;
+    
+    // Calcul de l'angle vertical (Pitch / Tangage) avec y
+    double vertical = ((y*(M_PI/screen_height)) - (M_PI/2)) * -1;
+
+    
+
+    // Vecteur Right (La droite du joueur, uniquement affectée par la rotation horizontale)
+    j.rightX = cos(horizontal);
+    j.rightY = sin(horizontal);
+    j.rightZ = 0.0;
+
+    // Vecteur Front (La direction du regard, combine la rotation horizontale et verticale)
+    j.frontX = -sin(horizontal) * cos(vertical);
+    j.frontY = cos(horizontal) * cos(vertical);
+    j.frontZ = sin(vertical);
+
+    // Vecteur Up (Le haut de la caméra, pour suivre l'inclinaison)
+    j.upX = -sin(horizontal) * -sin(vertical);
+    j.upY = cos(horizontal) * -sin(vertical);
+    j.upZ = cos(vertical);
+
+    // Mise a jour des coordonnees du point regarde (Point O)
     j.xO = j.eyeX + j.frontX * 1500;
     j.yO = j.eyeY + j.frontY * 1500;
     j.zO = j.eyeZ + j.frontZ * 1500;
@@ -569,6 +613,23 @@ void Animer(){
 
     //Variables
     int i;
+    //Variables pour gérer les colisions entre le petit cube (le joueur) et le gros cube
+    // 3 variables de la caméra
+    double oldEyeX= j.eyeX; 
+    double oldEyeY = j.eyeY; 
+    double oldEyeZ = j.eyeZ;
+    // 3 variables du point ou on regarde
+    double oldxO = j.xO; 
+    double oldyO = j.yO; 
+    double oldzO = j.zO;
+    // les variables de la hitbox
+    double oldHxmin= hitboxXmin; 
+    double oldHymin = hitboxYmin; 
+    double oldHzmin = hitboxZmin;
+    double oldHxmax = hitboxXmax; 
+    double oldHymax = hitboxYmax; 
+    double oldHzmax = hitboxZmax;
+
 
     //On bouge en avant
     if(touches['z']){
@@ -645,7 +706,7 @@ void Animer(){
         hitboxYmax += j.upY*vitesse;
         hitboxZmax += j.upZ*vitesse;
     }
-    //On bouge a gauche
+    //On bouge en bas
     if(touches['c']){
         j.eyeX -= j.upX*vitesse;
         j.eyeY -= j.upY*vitesse;
@@ -660,7 +721,21 @@ void Animer(){
         hitboxYmax -= j.upY*vitesse;
         hitboxZmax -= j.upZ*vitesse;
     }
-
+    // si on tente de sortir du cube alors on remet aux anciennes coordonnées
+    if(verif_sortie_main_cube() == 1){
+        j.eyeX = oldEyeX; 
+        j.eyeY = oldEyeY; 
+        j.eyeZ=oldEyeZ;
+        j.xO = oldxO; 
+        j.yO= oldyO; 
+        j.zO = oldzO;
+        hitboxXmin = oldHxmin; 
+        hitboxYmin = oldHymin; 
+        hitboxZmin = oldHzmin;
+        hitboxXmax = oldHxmax; 
+        hitboxYmax= oldHymax; 
+        hitboxZmax = oldHzmax;
+    }
     //Gestion des blocks
     if(onEasyMode){
         for(i=0; i<nb_blocks_easy; i++){
