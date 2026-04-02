@@ -5,15 +5,19 @@
 #include "GL/glut.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 
-#define NB_BLOCKS_MAX 100
+#define NB_BLOCKS_EASY_MAX 25
+#define NB_BLOCKS_MEDIUM_MAX 40
+#define NB_BLOCKS_HARD_MAX 55
+#define NB_BLOCKS_EXTREME_MAX 70
 
 //Tableau de blocks de chaque difficulte
 //Chaque blocks est aligne avec les axes et contient: xmin/ymin/zmin/xmax/ymax/zmax
-extern double blocks_easy[NB_BLOCKS_MAX][6];
-extern double blocks_medium[NB_BLOCKS_MAX][6];
-extern double blocks_hard[NB_BLOCKS_MAX][6];
-extern double blocks_extreme[NB_BLOCKS_MAX][6];
+extern double blocks_easy[NB_BLOCKS_EASY_MAX][6];
+extern double blocks_medium[NB_BLOCKS_MEDIUM_MAX][6];
+extern double blocks_hard[NB_BLOCKS_HARD_MAX][6];
+extern double blocks_extreme[NB_BLOCKS_EXTREME_MAX][6];
 
 //Nombre de blocks
 extern int nb_blocks_easy;
