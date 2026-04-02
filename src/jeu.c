@@ -722,6 +722,7 @@ void Animer(){
         hitboxZmax -= j.upZ*vitesse;
     }
     // si on tente de sortir du cube alors on remet aux anciennes coordonnées
+    
     if(verif_sortie_main_cube() == 1){
         j.eyeX = oldEyeX; 
         j.eyeY = oldEyeY; 
@@ -735,7 +736,13 @@ void Animer(){
         hitboxXmax = oldHxmax; 
         hitboxYmax= oldHymax; 
         hitboxZmax = oldHzmax;
-    }
+    } 
+
+    
+
+ 
+
+    
     //Gestion des blocks
     if(onEasyMode){
         for(i=0; i<nb_blocks_easy; i++){
