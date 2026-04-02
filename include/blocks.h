@@ -7,10 +7,10 @@
 #include <stdio.h>
 #include <time.h>
 
-#define NB_BLOCKS_EASY_MAX 25
-#define NB_BLOCKS_MEDIUM_MAX 40
-#define NB_BLOCKS_HARD_MAX 55
-#define NB_BLOCKS_EXTREME_MAX 70
+#define NB_BLOCKS_EASY_MAX 200
+#define NB_BLOCKS_MEDIUM_MAX 400
+#define NB_BLOCKS_HARD_MAX 600
+#define NB_BLOCKS_EXTREME_MAX 800
 
 //Tableau de blocks de chaque difficulte
 //Chaque blocks est aligne avec les axes et contient: xmin/ymin/zmin/xmax/ymax/zmax

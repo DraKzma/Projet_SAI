@@ -64,7 +64,7 @@ void spawn_blocks_easy(){
         do{
             //Block de 20x250x20
             coord_xmin = rand()%981; //entre 0 et 981
-            coord_ymin = (rand()%2001)+3000; //entre 3000 et 5000
+            coord_ymin = (rand()%5001)+3000; //entre 3000 et 8000
             coord_zmin = rand()%981; //entre 0 et 981
             coord_xmax = coord_xmin+20;
             coord_ymax = coord_ymin+250;
@@ -124,7 +124,7 @@ void spawn_blocks_medium(){
         do{
             //Block de 20x250x20
             coord_xmin = rand()%981; //entre 0 et 981
-            coord_ymin = (rand()%2001)+3000; //entre 3000 et 5000
+            coord_ymin = (rand()%5001)+3000; //entre 3000 et 8000
             coord_zmin = rand()%981; //entre 0 et 981
             coord_xmax = coord_xmin+20;
             coord_ymax = coord_ymin+250;
@@ -184,7 +184,7 @@ void spawn_blocks_hard(){
         do{
             //Block de 20x250x20
             coord_xmin = rand()%981; //entre 0 et 981
-            coord_ymin = (rand()%2001)+3000; //entre 3000 et 5000
+            coord_ymin = (rand()%5001)+3000; //entre 3000 et 8000
             coord_zmin = rand()%981; //entre 0 et 981
             coord_xmax = coord_xmin+20;
             coord_ymax = coord_ymin+250;
@@ -244,7 +244,7 @@ void spawn_blocks_extreme(){
         do{
             //Block de 20x250x20
             coord_xmin = rand()%981; //entre 0 et 981
-            coord_ymin = (rand()%2001)+3000; //entre 3000 et 5000
+            coord_ymin = (rand()%5001)+8000; //entre 3000 et 8000
             coord_zmin = rand()%981; //entre 0 et 981
             coord_xmax = coord_xmin+20;
             coord_ymax = coord_ymin+250;

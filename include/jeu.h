@@ -8,6 +8,7 @@
 #include <limits.h>
 #include <math.h>
 #include <unistd.h>
+#include <string.h>
 
 //coordonnee x: droite/gauche (augmente a droite/diminue a gauche)
 //coordonnee y: avant/arriere (augmente en avant/diminue en arriere)

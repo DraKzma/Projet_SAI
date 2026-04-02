@@ -370,6 +370,27 @@ int verif_sortie_main_cube(){
     return 0; // Le joueur est toujours à l'intérieur
 }
 
+void printText2DBitmap(int x, int y, char *string, void *font){
+    //Variables
+	int len, i;
+
+	glRasterPos2f(x,y); // Positionne le premier caractère de la chaîne
+	len = (int) strlen(string);
+	for(i = 0; i < len; i++){
+        glutBitmapCharacter(font,string[i]); // Affiche chaque caractère de la chaîne
+    }
+}
+
+void printText2DStroke(float x, float y, char *string, void *font){
+	char *p;
+	glPushMatrix();
+	glTranslatef(x, y, 0); // Positionne le premier caractère de la chaîne
+	for (p = string; *p; p++){
+        glutStrokeCharacter(font, *p); // Affiche chaque caractère de la chaîne
+    }
+	glPopMatrix();
+}
+
 //Fonction d'affichage
 void Affichage(){
 
@@ -462,6 +483,52 @@ void Affichage(){
     //afficheLigne(j.eyeX, j.eyeY+20.0, j.eyeZ+5.0, j.eyeX+(100.0*j.upX), j.eyeY+(100.0*j.upY), j.eyeZ+(100.0*j.upZ));
 
     glEnd();
+
+    //Partie 2D pour le texte
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+
+    //GlOrtho
+    glOrtho(0, screen_width, 0, screen_height, -1, 1);
+
+    //Matrices de visualisation
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+    //FAIRE L'AFFICHAGE DU TEXTE ICI
+
+    /*
+    glColor3f(1.0, 1.0, 1.0);
+    printText2DBitmap(10, screen_height-20, "Yooooo", GLUT_BITMAP_TIMES_ROMAN_24);
+    printText2DStroke(screen_width/2, screen_height/2, "Yooooo", GLUT_STROKE_ROMAN);
+    */
+
+    //Affichage de la difficulte
+    if(onEasyMode){
+        glColor3f(0.0,1.0,0.0);
+        printText2DBitmap(10, screen_height-20, "Easy", GLUT_BITMAP_TIMES_ROMAN_24);
+    }
+    else if(onMediumMode){
+        glColor3f(1.0,0.5,0.0);
+        printText2DBitmap(10, screen_height-20, "Medium", GLUT_BITMAP_TIMES_ROMAN_24);
+    }
+    else if(onHardMode){
+        glColor3f(1.0,0.0,0.0);
+        printText2DBitmap(10, screen_height-20, "Hard", GLUT_BITMAP_TIMES_ROMAN_24);
+    }
+    else if(onExtremeMode){
+        glColor3f(0.5, 0.1, 0.8);
+        printText2DBitmap(10, screen_height-20, "Extreme", GLUT_BITMAP_TIMES_ROMAN_24);
+    }
+
+    //Restaurer les matrices
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+
+    glMatrixMode(GL_MODELVIEW);
     glEnable(GL_DEPTH_TEST);
 
     //Fin
