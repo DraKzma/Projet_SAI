@@ -551,24 +551,32 @@ void Affichage(){
 
     glEnd();
 
-
-    //Affichage du texte
+    //Affichage de la difficulte
     if(onEasyMode){
         glColor3f(0.0,1.0,0.0);
-        printText2DBitmap(10, screen_height-20, "Easy", GLUT_BITMAP_TIMES_ROMAN_24);
+        printText2DBitmap(panelXmin+((panelXmax-panelXmin)*0.2), panelYmin+((panelYmax-panelYmin)*0.8), "EasyMode", GLUT_BITMAP_TIMES_ROMAN_24);
     }
     else if(onMediumMode){
         glColor3f(1.0,0.5,0.0);
-        printText2DBitmap(10, screen_height-20, "Medium", GLUT_BITMAP_TIMES_ROMAN_24);
+        printText2DBitmap(panelXmin+((panelXmax-panelXmin)*0.2), panelYmin+((panelYmax-panelYmin)*0.8), "MediumMode", GLUT_BITMAP_TIMES_ROMAN_24);
     }
     else if(onHardMode){
         glColor3f(1.0,0.0,0.0);
-        printText2DBitmap(10, screen_height-20, "Hard", GLUT_BITMAP_TIMES_ROMAN_24);
+        printText2DBitmap(panelXmin+((panelXmax-panelXmin)*0.2), panelYmin+((panelYmax-panelYmin)*0.8), "HardMode", GLUT_BITMAP_TIMES_ROMAN_24);
     }
     else if(onExtremeMode){
         glColor3f(0.5, 0.1, 0.8);
-        printText2DBitmap(10, screen_height-20, "Extreme", GLUT_BITMAP_TIMES_ROMAN_24);
+        printText2DBitmap(panelXmin+((panelXmax-panelXmin)*0.2), panelYmin+((panelYmax-panelYmin)*0.8), "ExtremeMode", GLUT_BITMAP_TIMES_ROMAN_24);
     }
+
+    //Affichage du timer
+    glColor3f(1.0,1.0,1.0);
+    printText2DBitmap(panelXmin+((panelXmax-panelXmin)*0.2), panelYmin+((panelYmax-panelYmin)*0.6), "Timer: mm.ss.dd", GLUT_BITMAP_TIMES_ROMAN_24);
+
+    //Affichage de la position du joueur
+    printText2DBitmap(panelXmin+((panelXmax-panelXmin)*0.2), panelYmin+((panelYmax-panelYmin)*0.4), "PlayerPosX: xxxx", GLUT_BITMAP_TIMES_ROMAN_24);
+    printText2DBitmap(panelXmin+((panelXmax-panelXmin)*0.2), panelYmin+((panelYmax-panelYmin)*0.3), "PlayerPosY: xxxx", GLUT_BITMAP_TIMES_ROMAN_24);
+    printText2DBitmap(panelXmin+((panelXmax-panelXmin)*0.2), panelYmin+((panelYmax-panelYmin)*0.2), "PlayerPosZ: xxxx", GLUT_BITMAP_TIMES_ROMAN_24);
 
     //Restaurer les matrices
     glPopMatrix();
