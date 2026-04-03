@@ -66,6 +66,12 @@ void init_taille_ecran(){
         ratioTwo = 10;
     }
     printf("Taille de l'ecran: %d x %d (Ratio: %d:%d)\n", screen_width, screen_height, ratioOne, ratioTwo);
+
+    //Initialisation de la taille du panel (flemme de le faire dans une autre fonction)
+    panelXmin = 0;
+    panelYmin = screen_height/2;
+    panelXmax = screen_width/4;
+    panelYmax = screen_height;
 }
 
 //Fonction afficher cube avec faces
@@ -188,6 +194,29 @@ void  afficherCubeLignes(double xmin, double ymin, double zmin, double xmax, dou
     afficheLigne(p6x, p6y, p6z, p7x, p7y, p7z);
     afficheLigne(p7x, p7y, p7z, p8x, p8y, p8z);
     afficheLigne(p8x, p8y, p8z, p5x, p5y, p5z);
+}
+
+//Fonction qui affiche un cube en 2D
+void afficherCubeFaces2D(double xmin, double ymin, double xmax, double ymax){
+    glVertex2f(xmin, ymin);
+    glVertex2f(xmax, ymin);
+    glVertex2f(xmax, ymax);
+    glVertex2f(xmin, ymax);
+}
+
+//Fonction qui affiche un cube en 2D (seulement le contour)
+void afficherCubeLignes2D(double xmin, double ymin, double xmax, double ymax){
+    glVertex2f(xmin, ymin);
+    glVertex2f(xmax, ymin);
+
+    glVertex2f(xmax, ymin);
+    glVertex2f(xmax, ymax);
+
+    glVertex2f(xmax, ymax);
+    glVertex2f(xmin, ymax);
+
+    glVertex2f(xmin, ymax);
+    glVertex2f(xmin, ymin);
 }
 
 /*  valeurs de exit_code
@@ -505,7 +534,25 @@ void Affichage(){
     printText2DStroke(screen_width/2, screen_height/2, "Yooooo", GLUT_STROKE_ROMAN);
     */
 
-    //Affichage de la difficulte
+    //Affichage en faces
+    glBegin(GL_QUADS);
+
+    //Rectangle d'affichage en haut a gauche de l'ecran
+    glColor4f(0.5,0.5,0.5,0.5);
+    afficherCubeFaces2D(panelXmin, panelYmin, panelXmax, panelYmax);
+
+    glEnd();
+
+    //Affichage en ligne
+    glBegin(GL_LINES);
+
+    glColor3f(0.5,0.5,0.5);
+    afficherCubeLignes2D(panelXmin, panelYmin, panelXmax, panelYmax);
+
+    glEnd();
+
+
+    //Affichage du texte
     if(onEasyMode){
         glColor3f(0.0,1.0,0.0);
         printText2DBitmap(10, screen_height-20, "Easy", GLUT_BITMAP_TIMES_ROMAN_24);

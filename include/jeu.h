@@ -83,4 +83,10 @@ int onMediumMode = 0;
 int onHardMode = 0;
 int onExtremeMode = 0;
 
+//Dimensions du rectangle d'affichage en haut a gauche
+double panelXmin;
+double panelYmin;
+double panelXmax;
+double panelYmax;
+
 #endif /* _JEU_H_ */
