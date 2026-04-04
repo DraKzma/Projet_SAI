@@ -1,5 +1,6 @@
 #include "../include/jeu.h"
 #include "../include/blocks.h"
+#include "../include/scores.h"
 
 //Initialise le joueur
 void init_joueur(){
@@ -228,29 +229,10 @@ void afficherCubeLignes2D(double xmin, double ymin, double xmax, double ymax){
 *   5: le joueur gagne
 */
 int finPartie(int exit_code){
-    sleep(1);
-    
-    printf("Fin de la partie:\n");
-    if(exit_code == 0){
-        printf("Le bouton de fin de partie a ete appuyee.\n");
-    }
-    else if(exit_code == 1){
-        printf("Un block easy a touche le joueur.\n");
-    }
-    else if(exit_code == 2){
-        printf("Un block medium a touche le joueur.\n");
-    }
-    else if(exit_code == 3){
-        printf("Un block hard a touche le joueur.\n");
-    }
-    else if(exit_code == 4){
-        printf("Un block extreme a touche le joueur.\n");
-    }
-    else{
-        printf("Vous avez gagne!\n");
-    }
 
-    exit(EXIT_SUCCESS);
+    sleep(1);
+    glutLeaveMainLoop();
+
 }
 
 /*  Fonction qui gere le changement de difficulte
@@ -425,6 +407,9 @@ void Affichage(){
 
     //Variables
     int i;
+    char posX[20];
+    char posY[20];
+    char posZ[20];
 
     //Debut
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -574,9 +559,12 @@ void Affichage(){
     printText2DBitmap(panelXmin+((panelXmax-panelXmin)*0.2), panelYmin+((panelYmax-panelYmin)*0.6), "Timer: mm.ss.dd", GLUT_BITMAP_TIMES_ROMAN_24);
 
     //Affichage de la position du joueur
-    printText2DBitmap(panelXmin+((panelXmax-panelXmin)*0.2), panelYmin+((panelYmax-panelYmin)*0.4), "PlayerPosX: xxxx", GLUT_BITMAP_TIMES_ROMAN_24);
-    printText2DBitmap(panelXmin+((panelXmax-panelXmin)*0.2), panelYmin+((panelYmax-panelYmin)*0.3), "PlayerPosY: xxxx", GLUT_BITMAP_TIMES_ROMAN_24);
-    printText2DBitmap(panelXmin+((panelXmax-panelXmin)*0.2), panelYmin+((panelYmax-panelYmin)*0.2), "PlayerPosZ: xxxx", GLUT_BITMAP_TIMES_ROMAN_24);
+    sprintf(posX, "PlayerPosX: %.2f", j.eyeX);
+    sprintf(posY, "PlayerPosY: %.2f", j.eyeY);
+    sprintf(posZ, "PlayerPosZ: %.2f", j.eyeZ);
+    printText2DBitmap(panelXmin+((panelXmax-panelXmin)*0.2), panelYmin+((panelYmax-panelYmin)*0.4), posX, GLUT_BITMAP_TIMES_ROMAN_24);
+    printText2DBitmap(panelXmin+((panelXmax-panelXmin)*0.2), panelYmin+((panelYmax-panelYmin)*0.3), posY, GLUT_BITMAP_TIMES_ROMAN_24);
+    printText2DBitmap(panelXmin+((panelXmax-panelXmin)*0.2), panelYmin+((panelYmax-panelYmin)*0.2), posZ, GLUT_BITMAP_TIMES_ROMAN_24);
 
     //Restaurer les matrices
     glPopMatrix();
@@ -858,12 +846,7 @@ void Animer(){
         hitboxXmax = oldHxmax; 
         hitboxYmax= oldHymax; 
         hitboxZmax = oldHzmax;
-    } 
-
-    
-
- 
-
+    }
     
     //Gestion des blocks
     if(onEasyMode){
@@ -903,10 +886,12 @@ int main(int argc, char* argv[]){
 
     //Variables
     char c;
+    char nom[20] = "";
 
     //Debut
     glutInit(&argc, argv);                
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
+    glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_GLUTMAINLOOP_RETURNS);
 
     //Initialisation du joueur
     init_joueur();
@@ -928,6 +913,10 @@ int main(int argc, char* argv[]){
 
     //Attente d'un appuie sur entree pour commencer
     printf("Pour quitter la fenetre, appuyez sur \'&\'.\n");
+
+    read_scores();
+    print_scores();
+
     printf("Pour commencer le jeu, appuyez sur entree:\n");
     while((c = getchar()) != '\n'){
     }
@@ -962,8 +951,41 @@ int main(int argc, char* argv[]){
     //Gestion de l'animation
     glutIdleFunc(Animer);
 
+    //Tests pour les scores
+    /*
+    read_scores();
+    print_scores();
+    update_scores(test, 1, 30, 89);
+    print_scores();
+    save_scores();
+    */
+
     //Boucle
     glutMainLoop();
+
+    printf("Fin de la partie:\n");
+    if(game_result == 0){
+        printf("Le bouton de fin de partie a ete appuyee.\n");
+    }
+    else if(game_result == 1){
+        printf("Un block easy a touche le joueur.\n");
+    }
+    else if(game_result == 2){
+        printf("Un block medium a touche le joueur.\n");
+    }
+    else if(game_result == 3){
+        printf("Un block hard a touche le joueur.\n");
+    }
+    else if(game_result == 4){
+        printf("Un block extreme a touche le joueur.\n");
+    }
+    else{
+        printf("Vous avez gagne!\n");
+    }
+
+    //CHANGER LES ARGUMENTS PAR LES VALEURS REELLES DU TEMPS, LAISSER LE NOM VIDE TEL QUEL
+    update_scores(nom, 0, 0, 0);
+    save_scores();
     
     //Fin
     exit(EXIT_SUCCESS);

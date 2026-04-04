@@ -9,6 +9,7 @@
 #include <math.h>
 #include <unistd.h>
 #include <string.h>
+#include <GL/freeglut.h>
 
 //coordonnee x: droite/gauche (augmente a droite/diminue a gauche)
 //coordonnee y: avant/arriere (augmente en avant/diminue en arriere)
@@ -88,5 +89,8 @@ double panelXmin;
 double panelYmin;
 double panelXmax;
 double panelYmax;
+
+//Variable qui permet de connaitre la raison de la fin de la partie
+int game_result;
 
 #endif /* _JEU_H_ */

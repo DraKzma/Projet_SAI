@@ -1,6 +1,7 @@
 # Fichier objets
 out/jeu.o
 out/blocks.o
+out/scores.o
 
 # Executable
 jeu
