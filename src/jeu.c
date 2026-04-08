@@ -2,6 +2,12 @@
 #include "../include/blocks.h"
 #include "../include/scores.h"
 
+// Variables globales pour le timer
+int start_time = 0;
+int minutes_final = 0;
+int secondes_final = 0;
+int dixiemes_final = 0;
+
 //Initialise le joueur
 void init_joueur(){
     j.eyeX = 500.0;
@@ -229,6 +235,14 @@ void afficherCubeLignes2D(double xmin, double ymin, double xmax, double ymax){
 *   5: le joueur gagne
 */
 int finPartie(int exit_code){
+
+    game_result = exit_code;
+
+    // Figer et sauvegarder le temps final
+    int final_time = glutGet(GLUT_ELAPSED_TIME) - start_time;
+    minutes_final = final_time / 60000;
+    secondes_final = (final_time % 60000) / 1000;
+    dixiemes_final = (final_time % 1000) / 10;
 
     sleep(1);
     glutLeaveMainLoop();
@@ -554,9 +568,16 @@ void Affichage(){
         printText2DBitmap(panelXmin+((panelXmax-panelXmin)*0.2), panelYmin+((panelYmax-panelYmin)*0.8), "ExtremeMode", GLUT_BITMAP_TIMES_ROMAN_24);
     }
 
+    int current_time = glutGet(GLUT_ELAPSED_TIME) - start_time;
+    int minutes = current_time / 60000;
+    int secondes = (current_time % 60000) / 1000;
+    int dixiemes = (current_time % 1000) / 10; 
+
+    char timer_str[50];
+    sprintf(timer_str, "Timer: %02d.%02d.%02d", minutes, secondes, dixiemes);
     //Affichage du timer
     glColor3f(1.0,1.0,1.0);
-    printText2DBitmap(panelXmin+((panelXmax-panelXmin)*0.2), panelYmin+((panelYmax-panelYmin)*0.6), "Timer: mm.ss.dd", GLUT_BITMAP_TIMES_ROMAN_24);
+    printText2DBitmap(panelXmin+((panelXmax-panelXmin)*0.2), panelYmin+((panelYmax-panelYmin)*0.6), timer_str, GLUT_BITMAP_TIMES_ROMAN_24);
 
     //Affichage de la position du joueur
     sprintf(posX, "PlayerPosX: %.2f", j.eyeX);
@@ -920,6 +941,8 @@ int main(int argc, char* argv[]){
     printf("Pour commencer le jeu, appuyez sur entree:\n");
     while((c = getchar()) != '\n'){
     }
+    // capture du temps de début
+    start_time = glutGet(GLUT_ELAPSED_TIME);
 
     //Creation de la fenetre
     glutCreateWindow("Game");
@@ -983,8 +1006,7 @@ int main(int argc, char* argv[]){
         printf("Vous avez gagne!\n");
     }
 
-    //CHANGER LES ARGUMENTS PAR LES VALEURS REELLES DU TEMPS, LAISSER LE NOM VIDE TEL QUEL
-    update_scores(nom, 0, 0, 0);
+    update_scores(nom, minutes_final, secondes_final, dixiemes_final);
     save_scores();
     
     //Fin
