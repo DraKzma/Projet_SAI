@@ -265,6 +265,8 @@ void gestion_changement_dfficulte(){
         if(!blocks_encore_a_portee){
             onEasyMode = 0;
             onMediumMode = 1;
+            nb_blocks_easy=0;
+            spawn_blocks_medium();
         }
     }
     else if(onMediumMode){
@@ -277,6 +279,8 @@ void gestion_changement_dfficulte(){
         if(!blocks_encore_a_portee){
             onMediumMode = 0;
             onHardMode = 1;
+            nb_blocks_medium=0;
+            spawn_blocks_hard();
         }
     }
     else if(onHardMode){
@@ -289,6 +293,8 @@ void gestion_changement_dfficulte(){
         if(!blocks_encore_a_portee){
             onHardMode = 0;
             onExtremeMode = 1;
+            nb_blocks_hard=0;
+            spawn_blocks_extreme();
         }
     }
     else{
@@ -299,7 +305,10 @@ void gestion_changement_dfficulte(){
             }
         }
         if(!blocks_encore_a_portee){
-            finPartie(5);
+            onExtremeMode = 0;
+            onEasyMode = 1;
+            nb_blocks_extreme=0;
+            spawn_blocks_easy();
         }
     }
 }
@@ -926,11 +935,13 @@ int main(int argc, char* argv[]){
     //Initialisation de la taille de l'ecran
     init_taille_ecran();
 
-    //Intit des blocks
+    //Init des blocks
     spawn_blocks_easy();
+    /*
     spawn_blocks_medium();
     spawn_blocks_hard();
     spawn_blocks_extreme();
+    */
 
     //Attente d'un appuie sur entree pour commencer
     printf("Pour quitter la fenetre, appuyez sur \'&\'.\n");
